@@ -52,6 +52,7 @@ function App() {
          <Route path='/addblog' element={<AddBlog/>}/> 
          <Route path='/blog' element={<BlogList/>}/>
          <Route path='/chatting' element={<ChatPage/>}/>
+         <Route path='/user-dashboard/chats' element={<ChatPage/>}/>
         </Routes>
         <Footer/>
       </div>

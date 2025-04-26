@@ -34,7 +34,7 @@ const Navbar = () => {
           {/* Brand + desktop links */}
           <div className="flex items-center space-x-6">
             <Link to="/" className="text-white text-lg font-bold hover:text-indigo-400 transition">
-              Shaulat Kar
+              Aasani
             </Link>
             <div className="hidden md:flex items-center space-x-4">
               <Link to="/" className="text-white text-sm font-medium hover:text-indigo-400 transition">

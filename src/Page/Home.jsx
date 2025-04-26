@@ -13,7 +13,7 @@ function Home() {
       <section className="bg-gradient-to-r from-blue-500 to-purple-600 text-white py-24">
         <div className="max-w-7xl mx-auto text-center px-4">
           <h1 className="text-5xl md:text-6xl font-extrabold leading-tight">
-            Welcome to <span className="text-yellow-300">Shaulat Kar</span>
+            Welcome to <span className="text-yellow-300">Aasani</span>
           </h1>
           <p className="mt-6 text-xl md:text-2xl">
             Hire trusted professionals or offer your skills — all in one platform.
@@ -128,7 +128,7 @@ function Home() {
                 </div>
               </div>
               <p className="text-gray-600">
-                "Shaulat Kar made finding reliable service professionals effortless. Highly recommend!"
+                "Aasani made finding reliable service professionals effortless. Highly recommend!"
               </p>
             </div>
 

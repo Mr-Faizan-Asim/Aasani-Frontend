@@ -15,10 +15,10 @@ const Footer = () => {
           <div className="flex items-center space-x-3 mb-4 md:mb-0">
             <img
               src="/logo192.png"
-              alt="Shaulat Kar Logo"
+              alt="Aasani Logo"
               className="h-8 w-8"
             />
-            <span className="text-white text-lg font-semibold">Shaulat Kar</span>
+            <span className="text-white text-lg font-semibold">Aasani</span>
           </div>
 
           {/* Navigation Links */}
@@ -51,7 +51,7 @@ const Footer = () => {
 
         {/* Copyright */}
         <p className="text-center text-sm text-gray-500">
-          &copy; {new Date().getFullYear()} Shaulat Kar. All rights reserved.
+          &copy; {new Date().getFullYear()} Aasani. All rights reserved.
         </p>
       </div>
     </footer>
