@@ -19,6 +19,7 @@ import FindService from './Page/FindService.jsx';
 import SocietyOwnerDashboard from './Page/SocietyOwnerDashboard.jsx';
 import AddBlog from './Components/AddBlog.jsx';
 import BlogList from './Components/BlogList.jsx';
+import ChatPage from './Page/ChatPage.jsx';
 
 
 function App() {
@@ -50,6 +51,7 @@ function App() {
 
          <Route path='/addblog' element={<AddBlog/>}/> 
          <Route path='/blog' element={<BlogList/>}/>
+         <Route path='/chatting' element={<ChatPage/>}/>
         </Routes>
         <Footer/>
       </div>
