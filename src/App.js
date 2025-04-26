@@ -6,7 +6,7 @@ import Home from './Page/Home.jsx';
 import ProviderRegisterPage from './Page/ProviderRegisterPage.jsx';
 import FindServicePage from './Page/FindServicePage.jsx';
 import AdminDashboard from './Page/AdminDashboard.jsx';
-import ChatPage from './Page/ChatPage.jsx';
+import ChatbotPage from './Page/ChatbotPage.jsx';
 import Navbar from './Components/Navbar.jsx';
 import Footer from './Components/Footer.jsx';
 import UserProfile from './Page/UserProfile.jsx'; // Import the UserProfile component
@@ -40,7 +40,7 @@ function App() {
          <Route path="/user-dashboard/userdetails" element={<UserProfile/>} /> {/* Add this line for the user profile page */}
          <Route path="/user/:userId" element={<SingleUser/>} />
          <Route path="/contact" element={<Contact/>} /> {/* Add this line for the contact page */}
-         <Route path="/about" element={<ChatPage />}/> {/* Add this line for the chat page */}
+         <Route path="/about" element={<ChatbotPage />}/> {/* Add this line for the chat page */}
          <Route path="/addguest" element={<GuestRegisterPage/>}/> {/* Add this line for the chat page */}
          <Route path="/user-dashboard/become-service-provider" element={<ProviderRegisterPage/>}/>
          <Route path="/GuardDashboard" element={<GuestsDashboard/>}/> {/* Add this line for the chat page */}
