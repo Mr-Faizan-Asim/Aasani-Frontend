@@ -7,7 +7,7 @@ export default function ServicesList() {
   useEffect(() => {
     // Note: updated route to /providers/all
     axios
-      .get('http://localhost:5000/api/providers/all')
+      .get('https://backend-gdg.vercel.app/api/providers/all')
       .then(res => setServices(res.data))
       .catch(err => console.error('Failed to fetch services:', err));
   }, []);

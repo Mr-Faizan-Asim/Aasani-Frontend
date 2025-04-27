@@ -13,7 +13,7 @@ const FindService = () => {
   // Fetch all services on mount
   useEffect(() => {
     axios
-      .get('http://localhost:5000/api/provider/all')
+      .get('https://backend-gdg.vercel.app/api/provider/all')
       .then(res => {
         setAllProviders(res.data);
         setDisplayedProviders(res.data);
@@ -42,7 +42,7 @@ const FindService = () => {
 
     try {
       const res = await axios.get(
-        'http://localhost:5000/api/provider/find',
+        'https://backend-gdg.vercel.app/api/provider/find',
         { params: { category, offerPrice } }
       );
       setDisplayedProviders(res.data);

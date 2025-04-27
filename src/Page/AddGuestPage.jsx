@@ -27,7 +27,7 @@ const AddGuestPage = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/guests', {
+      const response = await fetch('https://backend-gdg.vercel.app/api/guests', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

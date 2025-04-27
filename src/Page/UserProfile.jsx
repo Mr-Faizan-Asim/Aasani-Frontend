@@ -32,7 +32,7 @@ const UserProfile = () => {
     (async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5000/api/users/email/${email}`,
+          `https://backend-gdg.vercel.app/api/users/email/${email}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         const data = res.data;
@@ -58,7 +58,7 @@ const UserProfile = () => {
     if (!user?._id) return;
     (async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/provider/all");
+        const res = await axios.get("https://backend-gdg.vercel.app/api/provider/all");
         const allServices = res.data;
         const mine = allServices.filter(
           (s) => String(s.user) === String(user._id)
@@ -76,7 +76,7 @@ const UserProfile = () => {
     (async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5000/api/guestToHome/invites/${user._id}`,
+          `https://backend-gdg.vercel.app/api/guestToHome/invites/${user._id}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setGuests(res.data.invites || []);
@@ -97,7 +97,7 @@ const UserProfile = () => {
       delete updates.email; // prevent email change
 
       const res = await axios.put(
-        `http://localhost:5000/api/users/${user._id}`,
+        `https://backend-gdg.vercel.app/api/users/${user._id}`,
         updates,
         { headers: { Authorization: `Bearer ${token}` } }
       );

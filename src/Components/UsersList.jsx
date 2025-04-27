@@ -6,7 +6,7 @@ export default function UsersList() {
   const [filterRole, setFilterRole] = useState('All');
 
   useEffect(() => {
-    axios.get('/api/users').then(res => setUsers(res.data));
+    axios.get('https://backend-gdg.vercel.app/api/users').then(res => setUsers(res.data));
   }, []);
 
   const filtered = users.filter(u =>

@@ -10,7 +10,7 @@ export default function ChatBox({ currentUserId }) {
   const bottomRef = useRef();
 
   useEffect(() => {
-    axios.get(`http://localhost:5000/api/chat/${chatId}`)
+    axios.get(`https://backend-gdg.vercel.app/api/chat/${chatId}`)
       .then(res => setChat(res.data))
       .catch(console.error);
   }, [chatId]);
@@ -22,7 +22,7 @@ export default function ChatBox({ currentUserId }) {
   const sendMessage = () => {
     if (!message.trim()) return;
     axios.post(
-      `http://localhost:5000/api/chat/${chatId}/message`,
+      `https://backend-gdg.vercel.app/api/chat/${chatId}/message`,
       { sender: currentUserId, content: message }
     )
     .then(res => {

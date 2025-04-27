@@ -11,7 +11,7 @@ export default function SocietyOwnerDashboard() {
   useEffect(() => {
     const fetchHouses = async () => {
       try {
-        const res = await axios.get('/api/houses'); // expects all houses
+        const res = await axios.get('https://backend-gdg.vercel.app/api/houses'); // expects all houses
         setHouses(res.data);
       } catch (err) {
         setError('Failed to load houses');

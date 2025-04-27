@@ -20,7 +20,7 @@ const GuestsDashboard = () => {
   useEffect(() => {
     const fetchTopGuests = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/guests', axiosConfig);
+        const res = await axios.get('https://backend-gdg.vercel.app/api/guests', axiosConfig);
         const sorted = res.data
           .sort((a, b) => new Date(b.visitDate) - new Date(a.visitDate));
         setTopGuests(sorted.slice(0, 5));
@@ -39,7 +39,7 @@ const GuestsDashboard = () => {
     setError('');
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/guests/house/${houseNo}`,
+        `https://backend-gdg.vercel.app/api/guests/house/${houseNo}`,
         axiosConfig
       );
       setGuests(res.data);

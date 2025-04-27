@@ -12,7 +12,7 @@ export default function ServiceApprovals() {
   }, []);
 
   const approveService = async (id) => {
-    await axios.put(`/api/services/${id}/authorize`);
+    await axios.put(`/https://backend-gdg.vercel.app/api/services/${id}/authorize`);
     setPendingServices(prev => prev.filter(service => service._id !== id));
   };
 

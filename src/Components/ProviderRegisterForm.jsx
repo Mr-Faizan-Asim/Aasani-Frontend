@@ -83,7 +83,7 @@ const ProviderRegisterForm = () => {
       dataToSend.append("price", formData.price);
 
       try {
-        const res = await axios.post("http://localhost:5000/api/provider/register", dataToSend, {
+        const res = await axios.post("https://backend-gdg.vercel.app/api/provider/register", dataToSend, {
           headers: {
             "Content-Type": "multipart/form-data"
           }

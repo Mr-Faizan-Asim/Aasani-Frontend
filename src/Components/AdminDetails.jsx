@@ -16,10 +16,10 @@ const AdminDetails = () => {
       try {
         setLoading(true);
         const [uRes, pRes, bRes, gRes] = await Promise.all([
-          axios.get('/api/users', { withCredentials: true }),
-          axios.get('/api/provider/all', { withCredentials: true }),
-          axios.get('/api/blogs', { withCredentials: true }),
-          axios.get('/api/guests', { withCredentials: true })
+          axios.get('https://backend-gdg.vercel.app/api/users', { withCredentials: true }),
+          axios.get('https://backend-gdg.vercel.app/api/provider/all', { withCredentials: true }),
+          axios.get('https://backend-gdg.vercel.app/api/blogs', { withCredentials: true }),
+          axios.get('https://backend-gdg.vercel.app/api/guests', { withCredentials: true })
         ]);
         setUsers(uRes.data);
         setProviders(pRes.data);

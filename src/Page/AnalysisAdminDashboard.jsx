@@ -38,10 +38,10 @@ const AdminDashboard = () => {
     const fetchAll = async () => {
       setLoading(true);
       const [u, p, b, g] = await Promise.all([
-        fetchResource('users', 'http://localhost:5000/api/users', { withCredentials: true }),
-        fetchResource('providers', 'http://localhost:5000/api/provider/all'),
-        fetchResource('blogs', 'http://localhost:5000/api/blogs'),
-        fetchResource('guests', 'http://localhost:5000/api/guests'),
+        fetchResource('users', 'https://backend-gdg.vercel.app/api/users', { withCredentials: true }),
+        fetchResource('providers', 'https://backend-gdg.vercel.app/api/provider/all'),
+        fetchResource('blogs', 'https://backend-gdg.vercel.app/api/blogs'),
+        fetchResource('guests', 'https://backend-gdg.vercel.app/api/guests'),
       ]);
       setUsers(u);
       setProviders(p);
