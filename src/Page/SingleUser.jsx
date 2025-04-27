@@ -11,7 +11,7 @@ const SingleUser = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await fetch(`https://sahulat-kar-backend.vercel.app/api/users/${userId}`);
+        const response = await fetch(`http://localhost:5000/api/users/${userId}`);
         if (!response.ok) {
           throw new Error("Failed to fetch profile");
         }
@@ -60,45 +60,11 @@ const SingleUser = () => {
                 className="w-full mt-1 p-2 border border-gray-300 rounded-md bg-gray-100"
               />
             </div>
-            {/* For security reasons, you might not want to show the password */}
-            <div>
-              <label className="text-sm text-gray-600">Date of Birth</label>
-              <input
-                disabled
-                type="date"
-                value={user.dob ? user.dob.split("T")[0] : ""}
-                className="w-full mt-1 p-2 border border-gray-300 rounded-md bg-gray-100"
-              />
-            </div>
-            <div>
-              <label className="text-sm text-gray-600">CNIC</label>
-              <input
-                disabled
-                value={user.cnic || ""}
-                className="w-full mt-1 p-2 border border-gray-200 bg-gray-100 rounded-md"
-              />
-            </div>
-            <div>
-              <label className="text-sm text-gray-600">Phone Number</label>
-              <input
-                disabled
-                value={user.phone || ""}
-                className="w-full mt-1 p-2 border border-gray-300 rounded-md bg-gray-100"
-              />
-            </div>
             <div>
               <label className="text-sm text-gray-600">Gender</label>
               <input
                 disabled
                 value={user.gender || ""}
-                className="w-full mt-1 p-2 border border-gray-300 rounded-md bg-gray-100"
-              />
-            </div>
-            <div>
-              <label className="text-sm text-gray-600">Location</label>
-              <input
-                disabled
-                value={user.location || ""}
                 className="w-full mt-1 p-2 border border-gray-300 rounded-md bg-gray-100"
               />
             </div>

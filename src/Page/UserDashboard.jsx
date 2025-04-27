@@ -4,7 +4,6 @@ import { NavLink, Outlet } from 'react-router-dom';
 
 export default function UserDashboard() {
   const links = [
-    { to: 'services-providing', label: 'Services Providing' },
     { to: 'become-service-provider', label: 'Become a Service Provider' },
     { to: 'userdetails', label: 'User Details' },
     { to: 'chats', label: 'Chats' },
