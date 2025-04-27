@@ -22,6 +22,8 @@ import BlogList from './Components/BlogList.jsx';
 import ChatPage from './Page/ChatPage.jsx';
 import ChatBox from './Page/ChatBox.jsx';
 import AnalysisAdminDashboard from './Page/AnalysisAdminDashboard.jsx';
+import AdminDetails from './Components/AdminDetails.jsx';
+import RideTracker from './Page/RideTracker.jsx';
 
 
 function App() {
@@ -54,15 +56,18 @@ function App() {
          <Route path="/SocietyOwnerDashboard" element={<SocietyOwnerDashboard/>}/> {/* Add this line for the chat page */}
          <Route path="/AdminDashboard" element={<AdminDashboard/>}/> {/* Add this line for the chat pag /SocietyOwnerDashboard */}
          <Route path="/AdminDashboard/analysis" element={<AnalysisAdminDashboard/>}/> {/* Add this line for the chat pag /SocietyOwnerDashboard */}
+         <Route path="/AdminDashboard/details" element={<AdminDetails/>}/> {/* Add this line for the chat pag /SocietyOwnerDashboard */}
          <Route path='/addblog' element={<AddBlog/>}/> 
          <Route path='/blog' element={<BlogList/>}/>
          <Route path='/chatting' element={<ChatBox/>}/>
          <Route path='/user-dashboard/chats' element={<ChatPage/>}/>
+         
+         <Route path='/tracker' element={<RideTracker />}/>
         </Routes>
         <Footer/>
       </div>
     </BrowserRouter>
   );
 }
-
+//Deploymeny Progress
 export default App;

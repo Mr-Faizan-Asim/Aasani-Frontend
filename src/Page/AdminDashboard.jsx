@@ -4,7 +4,7 @@ import { NavLink, Outlet } from 'react-router-dom';
 export default function AdminDashboard() {
   const links = [
     { to: 'analysis', label: 'Analysis' },
-    { to: 'services', label: 'Services' },
+    { to: 'details', label: 'Details' },
   ];
 
   return (

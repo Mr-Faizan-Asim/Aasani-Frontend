@@ -31,7 +31,7 @@ function Home() {
       </section>
 
       {/* Features */}
-      <Features />
+
 
       {/* Our Services */}
       <section id="services" className="py-20 bg-gray-50">

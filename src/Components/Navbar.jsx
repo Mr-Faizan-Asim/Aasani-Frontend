@@ -50,6 +50,9 @@ const Navbar = () => {
               <Link to="/find-service" className="text-white text-sm font-medium hover:text-indigo-400 transition">
                 Find Near Service
               </Link>
+              <Link to="/tracker" className="text-white text-sm font-medium hover:text-indigo-400 transition">
+                Track Employee
+              </Link>
               <Link to="/contact" className="text-white text-sm font-medium hover:text-indigo-400 transition">
                 Contact
               </Link>
@@ -124,6 +127,10 @@ const Navbar = () => {
             </Link>
             <Link to="/find-service" className="block text-white text-base font-medium hover:text-indigo-400 transition">
               Find Near Service
+            </Link>
+            
+            <Link to="/tracker" className="block text-white text-base font-medium hover:text-indigo-400 transition">
+              Track Emplyee
             </Link>
             <Link to="/contact" className="block text-white text-base font-medium hover:text-indigo-400 transition">
               Contact
