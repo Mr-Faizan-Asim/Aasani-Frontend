@@ -20,6 +20,7 @@ import SocietyOwnerDashboard from './Page/SocietyOwnerDashboard.jsx';
 import AddBlog from './Components/AddBlog.jsx';
 import BlogList from './Components/BlogList.jsx';
 import ChatPage from './Page/ChatPage.jsx';
+import ChatBox from './Page/ChatBox.jsx';
 
 
 function App() {
@@ -54,7 +55,7 @@ function App() {
 
          <Route path='/addblog' element={<AddBlog/>}/> 
          <Route path='/blog' element={<BlogList/>}/>
-         <Route path='/chatting' element={<ChatPage/>}/>
+         <Route path='/chatting' element={<ChatBox/>}/>
          <Route path='/user-dashboard/chats' element={<ChatPage/>}/>
         </Routes>
         <Footer/>
