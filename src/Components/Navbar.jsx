@@ -40,8 +40,8 @@ const Navbar = () => {
               <Link to="/" className="text-white text-sm font-medium hover:text-indigo-400 transition">
                 Home
               </Link>
-              <Link to="/about" className="text-white text-sm font-medium hover:text-indigo-400 transition">
-                About
+              <Link to="/Shaulat" className="text-white text-sm font-medium hover:text-indigo-400 transition">
+                Shaulat
               </Link>
               
               <Link to="/services" className="text-white text-sm font-medium hover:text-indigo-400 transition">
@@ -115,8 +115,8 @@ const Navbar = () => {
             <Link to="/" className="block text-white text-base font-medium hover:text-indigo-400 transition">
               Home
             </Link>
-            <Link to="/about" className="block text-white text-base font-medium hover:text-indigo-400 transition">
-              About
+            <Link to="/Shaulat" className="block text-white text-base font-medium hover:text-indigo-400 transition">
+               Shaulat
             </Link>
             
             <Link to="/services" className="block text-white text-base font-medium hover:text-indigo-400 transition">

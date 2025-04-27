@@ -8,11 +8,19 @@ const GuestsDashboard = () => {
   const [topGuests, setTopGuests] = useState([]);
   const [error, setError] = useState('');
 
+  // Retrieve token from localStorage for protected routes
+  const token = localStorage.getItem('token');
+  const axiosConfig = {
+    headers: {
+      Authorization: token ? `Bearer ${token}` : '',
+    },
+  };
+
   // Fetch top 5 recent guests across all houses
   useEffect(() => {
     const fetchTopGuests = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/guests'); // fetch all then slice
+        const res = await axios.get('http://localhost:5000/api/guests', axiosConfig);
         const sorted = res.data
           .sort((a, b) => new Date(b.visitDate) - new Date(a.visitDate));
         setTopGuests(sorted.slice(0, 5));
@@ -25,12 +33,15 @@ const GuestsDashboard = () => {
 
   const handleFilter = async () => {
     if (!houseNo.trim()) {
-      setError('Enter a house number');
+      setError('Enter a house number or ID');
       return;
     }
     setError('');
     try {
-      const res = await axios.get(`http://localhost:5000/api/guests/house/${houseNo}`);
+      const res = await axios.get(
+        `http://localhost:5000/api/guests/house/${houseNo}`,
+        axiosConfig
+      );
       setGuests(res.data);
     } catch (err) {
       setError(err.response?.data?.message || 'No guests found');

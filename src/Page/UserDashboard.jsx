@@ -6,7 +6,7 @@ export default function UserDashboard() {
   const links = [
     { to: 'become-service-provider', label: 'Become a Service Provider' },
     { to: 'userdetails', label: 'User Details' },
-    { to: 'chats', label: 'Chats' },
+    {  },
   ];
 
   return (

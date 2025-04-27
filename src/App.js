@@ -21,6 +21,7 @@ import AddBlog from './Components/AddBlog.jsx';
 import BlogList from './Components/BlogList.jsx';
 import ChatPage from './Page/ChatPage.jsx';
 import ChatBox from './Page/ChatBox.jsx';
+import AnalysisAdminDashboard from './Page/AnalysisAdminDashboard.jsx';
 
 
 function App() {
@@ -45,14 +46,14 @@ function App() {
          <Route path="/user-dashboard/userdetails" element={<UserProfile/>} /> {/* Add this line for the user profile page */}
          <Route path="/user/:userId" element={<SingleUser/>} />
          <Route path="/contact" element={<Contact/>} /> {/* Add this line for the contact page */}
-         <Route path="/about" element={<ChatbotPage />}/> {/* Add this line for the chat page */}
+         <Route path="/Shaulat" element={<ChatbotPage />}/> {/* Add this line for the chat page */}
          <Route path="/addguest" element={<GuestRegisterPage/>}/> {/* Add this line for the chat page */}
          <Route path="/user-dashboard/become-service-provider" element={<ProviderRegisterPage/>}/>
          <Route path="/GuardDashboard" element={<GuestsDashboard/>}/> {/* Add this line for the chat page */}
          
          <Route path="/SocietyOwnerDashboard" element={<SocietyOwnerDashboard/>}/> {/* Add this line for the chat page */}
          <Route path="/AdminDashboard" element={<AdminDashboard/>}/> {/* Add this line for the chat pag /SocietyOwnerDashboard */}
-
+         <Route path="/AdminDashboard/analysis" element={<AnalysisAdminDashboard/>}/> {/* Add this line for the chat pag /SocietyOwnerDashboard */}
          <Route path='/addblog' element={<AddBlog/>}/> 
          <Route path='/blog' element={<BlogList/>}/>
          <Route path='/chatting' element={<ChatBox/>}/>

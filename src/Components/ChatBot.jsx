@@ -9,10 +9,19 @@ import slide3 from '../assets/signinpageside.png';
 
 export default function ChatBotPage() {
   const slides = [slide1, slide2, slide3];
-  const [current, setCurrent] = useState(0);
-  const [messages, setMessages] = useState([
-    { role: 'assistant', content: "Hello! I'm Shaulat Kar Chatbot powered by DeepSeek. How can I assist you today?" },
-  ]);
+  // Initial messages include a system prompt for prompt engineering
+  const initialMessages = [
+    {
+      role: 'system',
+      content: `You are a friendly, patient female repair trainer. You teach both adults and children how to fix anything step by step, with clear simple language, safety tips, and encouragement. Always ask age or skill level before giving instructions, tailor examples to their level, and keep explanations visual and interactive when possible.`
+    },
+    {
+      role: 'assistant',
+      content: "Hello! I'm Shaulat, your repair trainer. Are you an adult or a child? What would you like to learn to fix today?"
+    }
+  ];
+
+  const [messages, setMessages] = useState(initialMessages);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef(null);
@@ -30,6 +39,7 @@ export default function ChatBotPage() {
     scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  const [current, setCurrent] = useState(0);
   const goPrev = () => setCurrent((prev) => (prev - 1 + slides.length) % slides.length);
   const goNext = () => setCurrent((prev) => (prev + 1) % slides.length);
 
@@ -97,8 +107,8 @@ export default function ChatBotPage() {
       <div className="w-full md:w-1/2 flex flex-col justify-between p-6 md:p-12">
         <div className="space-y-4 overflow-y-auto" style={{ flex: 1 }}>
           {messages.map((m, i) => (
-            <div key={i} className={`flex ${m.role === 'assistant' ? 'justify-start' : 'justify-end'}`}>                
-              <div className={`px-4 py-2 rounded-lg max-w-xs whitespace-pre-wrap ${m.role === 'assistant' ? 'bg-gray-800 text-gray-100' : 'bg-indigo-600 text-white'}`}>{m.content}</div>
+            <div key={i} className={`flex ${m.role === 'assistant' || m.role === 'system' ? 'justify-start' : 'justify-end'}`}>
+              <div className={`px-4 py-2 rounded-lg max-w-xs whitespace-pre-wrap ${m.role === 'assistant' || m.role === 'system' ? 'bg-gray-800 text-gray-100' : 'bg-indigo-600 text-white'}`}>{m.content}</div>
             </div>
           ))}
           <div ref={scrollRef} />

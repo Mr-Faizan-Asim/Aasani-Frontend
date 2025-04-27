@@ -36,7 +36,7 @@ const SingleUser = () => {
     <div className="flex flex-col min-h-screen bg-gray-50">
       <main className="flex-grow max-w-5xl mx-auto p-6">
         <h1 className="text-4xl font-bold mb-8 text-center text-gray-800">
-            {user.name}'s Profile
+          {user.name}'s Profile
         </h1>
 
         {error && <p className="text-red-500 text-center">{error}</p>}
@@ -69,10 +69,17 @@ const SingleUser = () => {
               />
             </div>
           </div>
-          {/* Instead of an update button, we do not render any edit controls in read-only mode */}
         </div>
 
-        {/* Optionally, you can display other information, such as services provided/requested */}
+        {/* Chat button: redirects to the chat app */}
+        <div className="text-center">
+          <button
+            onClick={() => window.location.href = 'https://talknode.netlify.app/'}
+            className="mt-4 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
+          >
+            Chat
+          </button>
+        </div>
       </main>
     </div>
   );
