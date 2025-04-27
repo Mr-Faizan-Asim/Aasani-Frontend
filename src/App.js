@@ -36,6 +36,9 @@ function App() {
           <Route path="/services" element={<FindService />} />
           <Route path="/provider-register" element={<ProviderRegisterPage />} />
           <Route path="/find-service" element={<FindServicePage />} />
+
+
+          
          <Route path="/admin" element={<AdminDashboard/>} /> 
          <Route path="/user-dashboard" element={<UserDashboard/>} /> {/* Add this line for the user profile page /user-dashboard/userdetails*/}
          <Route path="/user-dashboard/userdetails" element={<UserProfile/>} /> {/* Add this line for the user profile page */}

@@ -5,7 +5,11 @@ export default function ServicesList() {
   const [services, setServices] = useState([]);
 
   useEffect(() => {
-    axios.get('/api/services').then(res => setServices(res.data));
+    // Note: updated route to /providers/all
+    axios
+      .get('http://localhost:5000/api/providers/all')
+      .then(res => setServices(res.data))
+      .catch(err => console.error('Failed to fetch services:', err));
   }, []);
 
   return (
@@ -15,21 +19,28 @@ export default function ServicesList() {
         <table className="min-w-full">
           <thead>
             <tr className="bg-gray-200">
-              <th className="px-4 py-2">Provider</th>
-              <th className="px-4 py-2">Tags</th>
-              <th className="px-4 py-2">Price</th>
-              <th className="px-4 py-2">Location</th>
-              <th className="px-4 py-2">Authorized</th>
+              <th className="px-4 py-2 text-left">Provider Name</th>
+              <th className="px-4 py-2 text-left">Email</th>
+              <th className="px-4 py-2 text-left">Service</th>
+              <th className="px-4 py-2 text-left">Category</th>
+              <th className="px-4 py-2 text-left">Price</th>
+              <th className="px-4 py-2 text-left">Authorized</th>
             </tr>
           </thead>
           <tbody>
             {services.map(s => (
-              <tr key={s._id} className="border-t">
-                <td className="px-4 py-2">{s.user.name}</td>
-                <td className="px-4 py-2">{s.tags.join(', ')}</td>
-                <td className="px-4 py-2">{s.price}</td>
-                <td className="px-4 py-2">{s.location}</td>
-                <td className="px-4 py-2">{s.authorized ? 'Yes' : 'No'}</td>
+              <tr key={s._id} className="border-t hover:bg-gray-50">
+                <td className="px-4 py-2">
+                  {/* assuming backend .populate('user', 'name') */}
+                  {s.user?.name || 'Unknown'}
+                </td>
+                <td className="px-4 py-2">{s.email}</td>
+                <td className="px-4 py-2">{s.service}</td>
+                <td className="px-4 py-2">{s.category}</td>
+                <td className="px-4 py-2">₹{s.price}</td>
+                <td className="px-4 py-2">
+                  {s.authorized ? 'Yes' : 'No'}
+                </td>
               </tr>
             ))}
           </tbody>

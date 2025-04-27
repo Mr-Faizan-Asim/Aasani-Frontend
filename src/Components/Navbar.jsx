@@ -43,6 +43,10 @@ const Navbar = () => {
               <Link to="/about" className="text-white text-sm font-medium hover:text-indigo-400 transition">
                 About
               </Link>
+              
+              <Link to="/services" className="text-white text-sm font-medium hover:text-indigo-400 transition">
+                Services
+              </Link>
               <Link to="/find-service" className="text-white text-sm font-medium hover:text-indigo-400 transition">
                 Find Near Service
               </Link>
@@ -60,7 +64,7 @@ const Navbar = () => {
             {userEmail ? (
               <>
                 <button
-                  onClick={() => navigate("/dashboard")}
+                  onClick={() => navigate("/user-dashboard")}
                   className="px-4 py-2 rounded-md bg-green-600 text-white font-medium text-sm hover:bg-green-500 transition"
                 >
                   Dashboard
@@ -113,6 +117,10 @@ const Navbar = () => {
             </Link>
             <Link to="/about" className="block text-white text-base font-medium hover:text-indigo-400 transition">
               About
+            </Link>
+            
+            <Link to="/services" className="block text-white text-base font-medium hover:text-indigo-400 transition">
+              Services
             </Link>
             <Link to="/find-service" className="block text-white text-base font-medium hover:text-indigo-400 transition">
               Find Near Service

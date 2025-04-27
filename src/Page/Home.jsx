@@ -5,6 +5,7 @@ import Navbar from "../Components/Navbar.jsx";
 import Features from "../Components/Features.jsx";
 import Footer from "../Components/Footer.jsx";
 
+
 function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-white">

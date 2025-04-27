@@ -1,3 +1,4 @@
+// src/components/ProviderRegisterForm.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -11,16 +12,13 @@ const ProviderRegisterForm = () => {
     cnicPicFront: null,
     cnicPicBack: null,
     userPic: null,
-    tags: [],
-    inputTag: "",
-    description: "",
-    price: "",
-    location: ""
+    service: "",
+    category: "",
+    price: ""
   });
 
   const [errors, setErrors] = useState({});
   const [showModal, setShowModal] = useState(false);
-  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -31,26 +29,7 @@ const ProviderRegisterForm = () => {
     }
   };
 
-  const handleTagKeyDown = (e) => {
-    if ((e.key === 'Enter' || e.key === ',') && formData.inputTag.trim() !== "") {
-      e.preventDefault();
-      if (formData.tags.length < 5) {
-        setFormData((prev) => ({
-          ...prev,
-          tags: [...prev.tags, prev.inputTag.trim()],
-          inputTag: ""
-        }));
-      }
-    }
-  };
-
-  const removeTag = (indexToRemove) => {
-    setFormData((prev) => ({
-      ...prev,
-      tags: prev.tags.filter((_, idx) => idx !== indexToRemove)
-    }));
-  };
-
+  // Simple validation function
   const validate = () => {
     const newErrors = {};
     if (!formData.email.trim()) {
@@ -72,21 +51,19 @@ const ProviderRegisterForm = () => {
     if (!formData.userPic) {
       newErrors.userPic = "User picture is required";
     }
-    if (formData.tags.length === 0) {
-      newErrors.tags = "At least one service tag is required";
+    if (!formData.service.trim()) {
+      newErrors.service = "Service is required";
     }
-    if (!formData.description.trim()) {
-      newErrors.description = "Description is required";
+    if (!formData.category) {
+      newErrors.category = "Category is required";
     }
     if (!formData.price.trim()) {
       newErrors.price = "Price is required";
     }
-    if (!formData.location.trim()) {
-      newErrors.location = "Location is required";
-    }
     return newErrors;
   };
 
+  // Handle form submission using FormData to upload files
   const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validate();
@@ -94,35 +71,33 @@ const ProviderRegisterForm = () => {
       setErrors(validationErrors);
     } else {
       setErrors({});
+
       const dataToSend = new FormData();
       dataToSend.append("email", formData.email);
       dataToSend.append("cnic", formData.cnic);
       dataToSend.append("cnicPicFront", formData.cnicPicFront);
       dataToSend.append("cnicPicBack", formData.cnicPicBack);
       dataToSend.append("userPic", formData.userPic);
-      formData.tags.forEach(tag => dataToSend.append("tags[]", tag));
-      dataToSend.append("description", formData.description);
+      dataToSend.append("service", formData.service);
+      dataToSend.append("category", formData.category);
       dataToSend.append("price", formData.price);
-      dataToSend.append("location", formData.location);
 
       try {
-        setLoading(true);
-        const res = await axios.post(
-          "https://sahulat-kar-backend.vercel.app/api/provider/register",
-          dataToSend,
-          { headers: { "Content-Type": "multipart/form-data" } }
-        );
+        const res = await axios.post("http://localhost:5000/api/provider/register", dataToSend, {
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
+        });
         console.log("Provider Registration Submitted:", res.data);
         setShowModal(true);
       } catch (error) {
         console.error("Error registering provider:", error.response?.data || error.message);
-        setErrors({ submit: error.response?.data?.message || "Registration failed" });
-      } finally {
-        setLoading(false);
+        setErrors({ submit: error.response?.data.message || "Registration failed" });
       }
     }
   };
 
+  // Handle modal OK click: close modal and navigate to Home page
   const handleModalOk = () => {
     setShowModal(false);
     navigate("/");
@@ -131,115 +106,149 @@ const ProviderRegisterForm = () => {
   return (
     <div className="w-full max-w-sm mx-auto p-8">
       <h1 className="text-2xl font-bold mb-6">Register as Service Provider</h1>
+      <p className="text-gray-600 mb-8">Fill in your details to get started</p>
       <form onSubmit={handleSubmit} noValidate>
         {/* Email Field */}
+        <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-700">
+          Email
+        </label>
         <input
           type="email"
+          id="email"
           name="email"
-          placeholder="Email"
+          placeholder="Enter your email"
           value={formData.email}
           onChange={handleChange}
-          className="mb-4 w-full px-3 py-2 border rounded-md"
+          className={`mb-4 w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 ${errors.email ? "border-red-500" : ""}`}
         />
         {errors.email && <p className="text-red-500 text-xs mb-2">{errors.email}</p>}
 
         {/* CNIC Field */}
+        <label htmlFor="cnic" className="block mb-2 text-sm font-medium text-gray-700">
+          CNIC
+        </label>
         <input
           type="text"
+          id="cnic"
           name="cnic"
-          placeholder="CNIC (XXXXX-XXXXXXX-X)"
+          placeholder="XXXXX-XXXXXXX-X"
           value={formData.cnic}
           onChange={handleChange}
-          className="mb-4 w-full px-3 py-2 border rounded-md"
+          className={`mb-4 w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 ${errors.cnic ? "border-red-500" : ""}`}
         />
         {errors.cnic && <p className="text-red-500 text-xs mb-2">{errors.cnic}</p>}
 
-        {/* CNIC Pictures and User Pic */}
-        {["cnicPicFront", "cnicPicBack", "userPic"].map((picType) => (
-          <div key={picType}>
-            <input
-              type="file"
-              name={picType}
-              onChange={handleChange}
-              className="mb-4 w-full"
-            />
-            {errors[picType] && <p className="text-red-500 text-xs mb-2">{errors[picType]}</p>}
-          </div>
-        ))}
+        {/* CNIC Picture Front */}
+        <label htmlFor="cnicPicFront" className="block mb-2 text-sm font-medium text-gray-700">
+          CNIC Picture (Front)
+        </label>
+        <input
+          type="file"
+          id="cnicPicFront"
+          name="cnicPicFront"
+          onChange={handleChange}
+          className={`mb-4 w-full ${errors.cnicPicFront ? "border-red-500" : ""}`}
+        />
+        {errors.cnicPicFront && <p className="text-red-500 text-xs mb-2">{errors.cnicPicFront}</p>}
 
-        {/* Service Tags */}
-        <div className="mb-4">
-          <input
-            type="text"
-            name="inputTag"
-            value={formData.inputTag}
-            onChange={(e) => setFormData((prev) => ({ ...prev, inputTag: e.target.value }))}
-            onKeyDown={handleTagKeyDown}
-            placeholder="Add a service tag and press Enter"
-            className="w-full px-3 py-2 border rounded-md"
-          />
-          <div className="flex flex-wrap mt-2">
-            {formData.tags.map((tag, index) => (
-              <div key={index} className="flex items-center bg-purple-100 text-purple-700 px-2 py-1 rounded-full mr-2 mb-2">
-                <span>{tag}</span>
-                <button type="button" onClick={() => removeTag(index)} className="ml-2">&times;</button>
-              </div>
-            ))}
-          </div>
-          {errors.tags && <p className="text-red-500 text-xs mt-1">{errors.tags}</p>}
-        </div>
+        {/* CNIC Picture Back */}
+        <label htmlFor="cnicPicBack" className="block mb-2 text-sm font-medium text-gray-700">
+          CNIC Picture (Back)
+        </label>
+        <input
+          type="file"
+          id="cnicPicBack"
+          name="cnicPicBack"
+          onChange={handleChange}
+          className={`mb-4 w-full ${errors.cnicPicBack ? "border-red-500" : ""}`}
+        />
+        {errors.cnicPicBack && <p className="text-red-500 text-xs mb-2">{errors.cnicPicBack}</p>}
 
-        {/* Location */}
+        {/* User Picture */}
+        <label htmlFor="userPic" className="block mb-2 text-sm font-medium text-gray-700">
+          Your Picture
+        </label>
+        <input
+          type="file"
+          id="userPic"
+          name="userPic"
+          onChange={handleChange}
+          className={`mb-4 w-full ${errors.userPic ? "border-red-500" : ""}`}
+        />
+        {errors.userPic && <p className="text-red-500 text-xs mb-2">{errors.userPic}</p>}
+
+        {/* Service Provided */}
+        <label htmlFor="service" className="block mb-2 text-sm font-medium text-gray-700">
+          Service Provided
+        </label>
         <input
           type="text"
-          name="location"
-          placeholder="Location"
-          value={formData.location}
+          id="service"
+          name="service"
+          placeholder="e.g., Plumbing, Cleaning"
+          value={formData.service}
           onChange={handleChange}
-          className="mb-4 w-full px-3 py-2 border rounded-md"
+          className={`mb-4 w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 ${errors.service ? "border-red-500" : ""}`}
         />
-        {errors.location && <p className="text-red-500 text-xs mb-2">{errors.location}</p>}
+        {errors.service && <p className="text-red-500 text-xs mb-2">{errors.service}</p>}
 
-        {/* Description */}
-        <textarea
-          name="description"
-          placeholder="Description"
-          value={formData.description}
+        {/* Category */}
+        <label htmlFor="category" className="block mb-2 text-sm font-medium text-gray-700">
+          Category
+        </label>
+        <select
+          id="category"
+          name="category"
+          value={formData.category}
           onChange={handleChange}
-          className="mb-4 w-full px-3 py-2 border rounded-md"
-        />
-        {errors.description && <p className="text-red-500 text-xs mb-2">{errors.description}</p>}
+          className={`mb-4 w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 ${errors.category ? "border-red-500" : ""}`}
+        >
+          <option value="">Select Category</option>
+          <option value="household">House Hold Work</option>
+          <option value="outside">Outside Work</option>
+          <option value="automechanics">AutoMechanics Work</option>
+          <option value="electric">Electric Work</option>
+        </select>
+        {errors.category && <p className="text-red-500 text-xs mb-2">{errors.category}</p>}
 
         {/* Price */}
+        <label htmlFor="price" className="block mb-2 text-sm font-medium text-gray-700">
+          Price
+        </label>
         <input
           type="text"
+          id="price"
           name="price"
-          placeholder="Price"
+          placeholder="Enter your price range"
           value={formData.price}
           onChange={handleChange}
-          className="mb-6 w-full px-3 py-2 border rounded-md"
+          className={`mb-6 w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 ${errors.price ? "border-red-500" : ""}`}
         />
         {errors.price && <p className="text-red-500 text-xs mb-2">{errors.price}</p>}
 
+        {/* Register Button */}
         <button
           type="submit"
-          disabled={loading}
-          className={`w-full py-2 text-white rounded-md ${loading ? "bg-purple-400" : "bg-purple-600 hover:bg-purple-700"}`}
+          className="w-full py-2 mb-4 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
         >
-          {loading ? "Submitting..." : "Become Service Provider"}
+          Become Service Provider
         </button>
       </form>
 
-      {errors.submit && <p className="text-red-500 text-xs text-center mt-2">{errors.submit}</p>}
+      {/* (Optional) Display submission error */}
+      {errors.submit && <p className="text-red-500 text-xs mb-2">{errors.submit}</p>}
 
+      {/* Verification Popup Modal */}
       {showModal && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
           <div className="fixed inset-0 bg-gray-900 opacity-50"></div>
           <div className="bg-white rounded-lg p-6 z-10 max-w-sm mx-auto text-center">
-            <p className="text-gray-800 mb-4">Verification has been sent to the authority.</p>
+            <p className="text-gray-800 mb-4">
+              Verification has been sent to the authority.
+            </p>
             <button
               onClick={handleModalOk}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
             >
               OK
             </button>
