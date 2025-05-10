@@ -2,7 +2,7 @@
 
 > “Empowering local heroes — one tap at a time.”
 
-Aasani is a Progressive Web App (PWA) that connects skilled local workers (“mazdoor”) with residents and small-business owners who need reliable, trusted services. Built on the MERN stack and open-source AI, Aasani delivers a secure, centralized marketplace, AI-powered matchmaking & micro-training, mood & satisfaction tracking, and analytics dashboards — all designed to uplift both service providers and consumers in underserved communities.
+Aasani is a Web App that connects skilled local workers (“mazdoor”) with residents and small-business owners who need reliable, trusted services. Built on the MERN stack and open-source AI, Aasani delivers a secure, centralized marketplace, AI-powered matchmaking & micro-training, mood & satisfaction tracking, and analytics dashboards — all designed to uplift both service providers and consumers in underserved communities.
 
 ---
 
