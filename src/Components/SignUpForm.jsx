@@ -7,26 +7,31 @@ import {
   ChevronRightIcon,
 } from '@heroicons/react/24/outline';
 
+
 import slide1 from '../assets/signinpageside.png';
 import slide2 from '../assets/signinpageside.png';
 import slide3 from '../assets/signinpageside.png';
 
-const SERVICE_ID   = 'service_kolc749';
-const TEMPLATE_ID  = 'template_c04eenr';
-const PUBLIC_KEY   = 'GVy2LyEq-i4fIpV3A';
+const SERVICE_ID = 'service_kolc749';
+const TEMPLATE_ID = 'template_jvhk2ux';
+const PUBLIC_KEY = 'GVy2LyEq-i4fIpV3A';
+const OTP_VALIDITY = 300; // 5 minutes in seconds
 
 export default function SignUpForm() {
   const slides = [slide1, slide2, slide3];
   const [current, setCurrent] = useState(0);
   const [showPwd, setShowPwd] = useState(false);
-
-  // OTP-related state
+  
+  // OTP State
   const [otpSent, setOtpSent] = useState(false);
   const [generatedOtp, setGeneratedOtp] = useState('');
   const [userOtp, setUserOtp] = useState('');
   const [otpVerified, setOtpVerified] = useState(false);
   const [otpError, setOtpError] = useState('');
+  const [timer, setTimer] = useState(OTP_VALIDITY);
+  const [isLoading, setIsLoading] = useState(false);
 
+  // Form State
   const [formState, setFormState] = useState({
     email: '',
     name: '',
@@ -39,15 +44,15 @@ export default function SignUpForm() {
     agree: false,
   });
 
-  // Slide auto-rotate
+  // Slide rotation
   useEffect(() => {
-    const iv = setInterval(() => {
-      setCurrent((c) => (c + 1) % slides.length);
+    const interval = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % slides.length);
     }, 5000);
-    return () => clearInterval(iv);
+    return () => clearInterval(interval);
   }, []);
 
-  const goPrev = () =>
+    const goPrev = () =>
     setCurrent((c) => (c - 1 + slides.length) % slides.length);
   const goNext = () =>
     setCurrent((c) => (c + 1) % slides.length);
@@ -60,75 +65,118 @@ export default function SignUpForm() {
     }));
   };
 
-  // 2. Send OTP
-  const handleSendOtp = async () => {
-    if (!formState.email) return alert('Enter an email first');
-    // Generate 6-digit OTP
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
-    setGeneratedOtp(code);
 
+  // OTP Timer
+  useEffect(() => {
+    let interval;
+    if (otpSent && timer > 0 && !otpVerified) {
+      interval = setInterval(() => {
+        setTimer((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [otpSent, timer, otpVerified]);
+
+  const generateOtp = () => Math.floor(100000 + Math.random() * 900000).toString();
+
+  const handleSendOtp = async () => {
+    if (!formState.email.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)) {
+      setOtpError('Please enter a valid email address');
+      return;
+    }
+
+    setIsLoading(true);
+    setOtpError('');
+    
     try {
+      const otp = generateOtp();
       await send(
         SERVICE_ID,
         TEMPLATE_ID,
-        { to_email: formState.email, otp_code: code },
+        {
+          to_email: formState.email,
+          otp_code: otp,
+          sent_time: new Date().toLocaleString()
+        },
         PUBLIC_KEY
       );
+      
+      setGeneratedOtp(otp);
       setOtpSent(true);
-      setOtpError('');
-      alert('OTP sent to ' + formState.email);
-    } catch (err) {
-      console.error('EmailJS error:', err);
-      alert('Failed to send OTP. Try again.');
+      setTimer(OTP_VALIDITY);
+      setUserOtp('');
+      setOtpVerified(false);
+    } catch (error) {
+      console.error('OTP Send Error:', error);
+      setOtpError('Failed to send OTP. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // 3. Verify OTP
   const handleVerifyOtp = () => {
+    if (timer <= 0) {
+      setOtpError('OTP has expired. Please request a new one.');
+      return;
+    }
+
     if (userOtp === generatedOtp) {
       setOtpVerified(true);
       setOtpError('');
     } else {
-      setOtpError('Incorrect code. Please try again.');
+      setOtpError('Invalid OTP entered. Please check and try again.');
     }
   };
 
-  // 4. Final submit
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
     if (!otpVerified) {
-      return alert('Please verify your email first.');
+      setOtpError('Email verification required');
+      return;
     }
-    const payload = {
-      name: formState.name,
-      email: formState.email,
-      password: formState.password,
-      avatarUrl: formState.avatarUrl,
-      role: formState.role,
-      institution: formState.institution,
-      gender: formState.gender,
-      enrollmentDate: formState.enrollmentDate || undefined,
-    };
+
+    if (!formState.agree) {
+      setOtpError('You must agree to the terms & conditions');
+      return;
+    }
 
     try {
-      const res = await fetch(
-        'https://backend-gdg.vercel.app/api/users/signup',
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        }
-      );
+      setIsLoading(true);
+      const res = await fetch('https://backend-gdg.vercel.app/api/users/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formState.name,
+          email: formState.email,
+          password: formState.password,
+          avatarUrl: formState.avatarUrl,
+          role: formState.role,
+          institution: formState.institution,
+          gender: formState.gender,
+          enrollmentDate: formState.enrollmentDate || undefined,
+        }),
+      });
+      
       if (!res.ok) throw new Error('Registration failed');
       window.location.href = '/signin';
     } catch (err) {
       console.error(err);
-      alert('Signup failed.');
+      setOtpError('Registration failed. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-gray-900 text-white">
+      {/* Left Slider */}
       {/* LEFT: Slider */}
       <div className="w-full md:w-1/2 p-4 md:p-8 relative">
         <div className="relative rounded-xl overflow-hidden h-64 sm:h-80 md:h-full">
@@ -163,65 +211,91 @@ export default function SignUpForm() {
         </div>
       </div>
 
-      {/* RIGHT: Form */}
+      {/* Right Form */}
       <div className="w-full md:w-1/2 flex flex-col justify-center p-6 md:p-12">
-        <h1 className="text-3xl md:text-4xl font-bold mb-2">
-          Create an account
-        </h1>
+        <h1 className="text-3xl md:text-4xl font-bold mb-2">Create an account</h1>
         <p className="mb-6 text-gray-300 text-sm md:text-base">
           Already have an account?{' '}
-          <a href="/signin" className="text-indigo-400 hover:underline">
-            Log in
-          </a>
+          <a href="/signin" className="text-indigo-400 hover:underline">Log in</a>
         </p>
 
-        {/* --- EMAIL + OTP STEPS --- */}
-        {!otpSent ? (
+        {/* OTP Verification Section */}
+        {!otpVerified ? (
           <div className="space-y-4">
-            <input
-              name="email"
-              type="email"
-              value={formState.email}
-              onChange={handleChange}
-              className="w-full bg-gray-800 px-4 py-3 rounded-lg focus:outline-none"
-              placeholder="Email"
-              required
-            />
-            <button
-              type="button"
-              onClick={handleSendOtp}
-              className="w-full bg-indigo-600 py-3 rounded-lg font-semibold hover:bg-indigo-500 transition"
-            >
-              Send OTP
-            </button>
-          </div>
-        ) : !otpVerified ? (
-          <div className="space-y-2">
-            <input
-              type="text"
-              value={userOtp}
-              onChange={(e) => setUserOtp(e.target.value)}
-              className="w-full bg-gray-800 px-4 py-3 rounded-lg focus:outline-none"
-              placeholder="Enter OTP"
-            />
-            {otpError && (
-              <p className="text-red-400 text-sm">{otpError}</p>
+            <div className="relative">
+              <input
+                name="email"
+                type="email"
+                value={formState.email}
+                onChange={(e) => {
+                  setFormState(prev => ({...prev, email: e.target.value}));
+                  setOtpError('');
+                }}
+                className="w-full bg-gray-800 px-4 py-3 rounded-lg focus:outline-none pr-32"
+                placeholder="Email"
+                disabled={otpSent}
+                required
+              />
+              {!otpSent && (
+                <button
+                  type="button"
+                  onClick={handleSendOtp}
+                  disabled={isLoading}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-indigo-600 px-4 py-1.5 rounded text-sm disabled:opacity-50"
+                >
+                  {isLoading ? 'Sending...' : 'Send OTP'}
+                </button>
+              )}
+            </div>
+
+            {otpSent && (
+              <div className="space-y-2">
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={userOtp}
+                    onChange={(e) => {
+                      setUserOtp(e.target.value.replace(/\D/g, '').slice(0, 6));
+                      setOtpError('');
+                    }}
+                    className="w-full bg-gray-800 px-4 py-3 rounded-lg focus:outline-none pr-32"
+                    placeholder="Enter 6-digit OTP"
+                  />
+                  <div className="absolute right-2 top-1/2 transform -translate-y-1/2 text-sm text-gray-400">
+                    {formatTime(timer)}
+                  </div>
+                </div>
+
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={handleVerifyOtp}
+                    disabled={userOtp.length !== 6 || isLoading}
+                    className="flex-1 bg-indigo-600 py-3 rounded-lg font-semibold hover:bg-indigo-500 transition disabled:opacity-50"
+                  >
+                    {isLoading ? 'Verifying...' : 'Verify OTP'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSendOtp}
+                    disabled={timer > 0 || isLoading}
+                    className="px-4 py-3 rounded-lg border border-indigo-600 hover:bg-indigo-600 transition disabled:opacity-50"
+                  >
+                    ↻
+                  </button>
+                </div>
+              </div>
             )}
-            <button
-              type="button"
-              onClick={handleVerifyOtp}
-              className="w-full bg-indigo-600 py-3 rounded-lg font-semibold hover:bg-indigo-500 transition"
-            >
-              Verify OTP
-            </button>
+
+            {otpError && <p className="text-red-400 text-sm">{otpError}</p>}
           </div>
         ) : (
-          <p className="text-green-400 mb-4">
-            Email verified ✅ You can now complete the form.
-          </p>
+          <div className="mb-4 p-3 bg-green-900/20 rounded-lg">
+            <p className="text-green-400">✓ Email verified ({formState.email})</p>
+          </div>
         )}
 
-        {/* --- REMAINING FORM --- */}
+        {/* Registration Form */}
         {otpVerified && (
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Name */}
@@ -234,15 +308,15 @@ export default function SignUpForm() {
               required
             />
 
-            {/* Password with toggle */}
+            {/* Password */}
             <div className="relative">
               <input
                 name="password"
+                type={showPwd ? 'text' : 'password'}
                 value={formState.password}
                 onChange={handleChange}
                 className="w-full bg-gray-800 px-4 py-3 rounded-lg focus:outline-none"
-                type={showPwd ? 'text' : 'password'}
-                placeholder="Enter your password"
+                placeholder="Password"
                 required
               />
               <button
@@ -259,7 +333,7 @@ export default function SignUpForm() {
             </div>
 
             {/* Gender & Role */}
-            <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
+            <div className="flex flex-col sm:flex-row sm:gap-4 gap-y-4">
               <select
                 name="gender"
                 value={formState.gender}
@@ -267,9 +341,7 @@ export default function SignUpForm() {
                 className="w-full bg-gray-800 px-4 py-3 rounded-lg focus:outline-none"
                 required
               >
-                <option value="" disabled>
-                  Select Gender
-                </option>
+                <option value="" disabled>Select Gender</option>
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
                 <option value="Other">Other</option>
@@ -288,18 +360,18 @@ export default function SignUpForm() {
               </select>
             </div>
 
-            {/* Institution & Enrollment Date */}
-            <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
+            {/* Institution & Date */}
+            <div className="flex flex-col sm:flex-row sm:gap-4 gap-y-4">
               <input
                 name="institution"
-                placeholder="Institution (optional)"
                 value={formState.institution}
                 onChange={handleChange}
+                placeholder="Institution (optional)"
                 className="w-full bg-gray-800 px-4 py-3 rounded-lg focus:outline-none"
               />
               <input
-                name="enrollmentDate"
                 type="date"
+                name="enrollmentDate"
                 value={formState.enrollmentDate}
                 onChange={handleChange}
                 className="w-full bg-gray-800 px-4 py-3 rounded-lg focus:outline-none"
@@ -308,74 +380,52 @@ export default function SignUpForm() {
 
             {/* Avatar URL */}
             <input
-              name="avatarUrl"
               type="url"
+              name="avatarUrl"
               value={formState.avatarUrl}
               onChange={handleChange}
-              className="w-full bg-gray-800 px-4 py-3 rounded-lg focus:outline-none"
               placeholder="Avatar URL (optional)"
+              className="w-full bg-gray-800 px-4 py-3 rounded-lg focus:outline-none"
             />
 
             {/* Terms */}
             <div className="flex items-center">
               <input
                 id="terms"
-                name="agree"
                 type="checkbox"
+                name="agree"
                 checked={formState.agree}
                 onChange={handleChange}
                 className="h-4 w-4 text-indigo-400 focus:ring-indigo-500"
               />
               <label htmlFor="terms" className="ml-2 text-gray-300 text-sm">
                 I agree to the{' '}
-                <a
-                  href="/terms"
-                  className="text-indigo-400 hover:underline"
-                >
-                  Terms &amp; Conditions
+                <a href="/terms" className="text-indigo-400 hover:underline">
+                  Terms & Conditions
                 </a>
               </label>
             </div>
 
             <button
               type="submit"
-              disabled={!formState.agree}
+              disabled={!formState.agree || isLoading}
               className="w-full bg-indigo-600 py-3 rounded-lg font-semibold hover:bg-indigo-500 transition disabled:opacity-50"
             >
-              Create account
+              {isLoading ? 'Creating Account...' : 'Create Account'}
             </button>
           </form>
         )}
 
-        {/* Social login divider */}
-        <div className="flex items-center my-6">
+        {/* Social Login */}
+        <div className="my-6 flex items-center">
           <hr className="flex-1 border-gray-700" />
-          <span className="mx-2 text-gray-400 text-xs md:text-sm">
-            Or register with
-          </span>
+          <span className="mx-2 text-gray-400 text-sm">Or register with</span>
           <hr className="flex-1 border-gray-700" />
         </div>
-
-        {/* Social buttons */}
-        <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
-          <button className="w-full flex items-center justify-center border border-gray-600 py-3 rounded-lg hover:bg-gray-800 transition">
-            <img
-              src="https://www.svgrepo.com/show/355037/google.svg"
-              alt="Google"
-              className="h-5 w-5 mr-2"
-            />
-            Google
-          </button>
-          <button className="w-full flex items-center justify-center border border-gray-600 py-3 rounded-lg hover:bg-gray-800 transition">
-            <img
-              src="https://www.svgrepo.com/show/303128/apple-logo.svg"
-              alt="Apple"
-              className="h-5 w-5 mr-2"
-            />
-            Apple
-          </button>
+        <div className="flex flex-col sm:flex-row gap-4">
+          {/* Social buttons... */}
         </div>
       </div>
     </div>
   );
-}
+} 
