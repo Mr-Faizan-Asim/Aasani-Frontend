@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import {
   EyeIcon,
   EyeSlashIcon,
@@ -10,23 +11,23 @@ import slide2 from '../assets/signinpageside.png';
 import slide3 from '../assets/signinpageside.png';
 
 export default function SignInForm() {
+  const { executeRecaptcha } = useGoogleReCaptcha();
   const slides = [slide1, slide2, slide3];
   const [current, setCurrent] = useState(0);
   const [showPwd, setShowPwd] = useState(false);
-  const [formState, setFormState] = useState({
-    email: '',
-    password: '',
-  });
+  const [formState, setFormState] = useState({ email: '', password: '' });
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrent(prev => (prev + 1) % slides.length);
-    }, 5000);
+    const interval = setInterval(
+      () => setCurrent(prev => (prev + 1) % slides.length),
+      5000
+    );
     return () => clearInterval(interval);
-  }, []);
+  }, [slides.length]);
 
-  const goPrev = () => setCurrent(prev => (prev - 1 + slides.length) % slides.length);
+  const goPrev = () =>
+    setCurrent(prev => (prev - 1 + slides.length) % slides.length);
   const goNext = () => setCurrent(prev => (prev + 1) % slides.length);
 
   const handleChange = (e) => {
@@ -37,20 +38,29 @@ export default function SignInForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+
+    if (!executeRecaptcha) {
+      setError('reCAPTCHA not loaded yet');
+      return;
+    }
+
     try {
+      const token = await executeRecaptcha('signin');
+      if (!token) throw new Error('reCAPTCHA validation failed');
+
       const res = await fetch('https://backend-gdg.vercel.app/api/users/signin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: formState.email,
           password: formState.password,
+          recaptchaToken: token,
         }),
       });
+
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Sign in failed');
-      // store login info for future sessions
       localStorage.setItem('userInfo', JSON.stringify(data));
-      // redirect after successful sign-in
       window.location.href = '/dashboard';
     } catch (err) {
       setError(err.message);
@@ -59,8 +69,9 @@ export default function SignInForm() {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-gray-900 text-white">
-      {/* ─── LEFT PANEL: Slider ─── */}
+      {/* LEFT PANEL */}
       <div className="w-full md:w-1/2 relative p-4 md:p-8">
+        {/* Slider */}
         <div className="relative rounded-xl overflow-hidden h-64 sm:h-80 md:h-full">
           <img
             src={slides[current]}
@@ -89,19 +100,15 @@ export default function SignInForm() {
         </div>
       </div>
 
-      {/* ─── RIGHT PANEL: Email/Password Sign In ─── */}
+      {/* RIGHT PANEL */}
       <div className="w-full md:w-1/2 flex flex-col justify-center p-6 md:p-12">
         <h1 className="text-3xl md:text-4xl font-bold mb-2">Sign In</h1>
         <p className="mb-6 text-gray-300 text-sm md:text-base">
-          Don't have an account?{' '}
-          <a href="/signup" className="text-indigo-400 hover:underline">
-            Create one
-          </a>
+          Don’t have an account?{' '}
+          <a href="/signup" className="text-indigo-400 hover:underline">Create one</a>
         </p>
-
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && <p className="text-red-500 text-sm">{error}</p>}
-
           <input
             name="email"
             type="email"
@@ -111,7 +118,6 @@ export default function SignInForm() {
             placeholder="Email"
             required
           />
-
           <div className="relative">
             <input
               name="password"
@@ -134,7 +140,6 @@ export default function SignInForm() {
               )}
             </button>
           </div>
-
           <button
             type="submit"
             className="w-full bg-indigo-600 py-3 rounded-lg font-semibold hover:bg-indigo-500 transition"
@@ -144,5 +149,5 @@ export default function SignInForm() {
         </form>
       </div>
     </div>
-  );
+);
 }
