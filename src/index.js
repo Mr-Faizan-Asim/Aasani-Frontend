@@ -4,6 +4,8 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3';
+
 
 const clientId = '512907217400-6ukchlt0nsi5g2qmt9h6ulb5du3jl2ba.apps.googleusercontent.com';
 
@@ -13,7 +15,9 @@ root.render(
   <>
   
     <GoogleOAuthProvider clientId={clientId}>
-      <App />
+        <GoogleReCaptchaProvider reCaptchaKey="6Le4uDUrAAAAAKqD2rqRvq_qdUIuxXJElU9wjo0g">
+          <App />
+        </GoogleReCaptchaProvider>
     </GoogleOAuthProvider>
   </>
 );
