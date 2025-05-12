@@ -45,26 +45,34 @@ export default function SignInForm() {
     }
 
     try {
-      const token = await executeRecaptcha('signin');
-      if (!token) throw new Error('reCAPTCHA validation failed');
+  const token = await executeRecaptcha('signin');
+  if (!token) throw new Error('reCAPTCHA validation failed');
 
-      const res = await fetch('https://backend-gdg.vercel.app/api/users/signin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: formState.email,
-          password: formState.password,
-          recaptchaToken: token,
-        }),
-      });
+  const res = await fetch('https://backend-gdg.vercel.app/api/users/signin', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      email: formState.email,
+      password: formState.password,
+      recaptchaToken: token,
+    }),
+  });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Sign in failed');
-      localStorage.setItem('userInfo', JSON.stringify(data));
-      window.location.href = '/user-dashboard';
-    } catch (err) {
-      setError(err.message);
-    }
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || 'Sign in failed');
+
+  localStorage.setItem('userInfo', JSON.stringify(data));
+
+  // ✅ Redirect based on role
+  if (data.role === 'admin') {
+    window.location.href = '/admin-dashboard';
+  } else {
+    window.location.href = '/user-dashboard';
+  }
+} catch (err) {
+  setError(err.message);
+}
+
   };
 
   return (
