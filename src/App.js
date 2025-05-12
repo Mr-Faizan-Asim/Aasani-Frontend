@@ -28,7 +28,7 @@ import RideTracker from './Page/RideTracker.jsx';
 // Function to get current user from localStorage
 const getCurrentUser = () => {
   try {
-    const user = JSON.parse(localStorage.getItem("user"));
+    const user = JSON.parse(localStorage.getItem("userInfo"));
     return user;
   } catch {
     return null;

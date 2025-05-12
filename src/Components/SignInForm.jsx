@@ -61,7 +61,7 @@ export default function SignInForm() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Sign in failed');
       localStorage.setItem('userInfo', JSON.stringify(data));
-      window.location.href = '/dashboard';
+      window.location.href = '/user-dashboard';
     } catch (err) {
       setError(err.message);
     }
