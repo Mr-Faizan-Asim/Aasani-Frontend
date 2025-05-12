@@ -9,24 +9,21 @@ import slide3 from '../assets/signinpageside.png';
 
 export default function ChatBotPage() {
   const slides = [slide1, slide2, slide3];
-  // Initial messages include a system prompt for prompt engineering
-  const initialMessages = [
-    {
-      role: 'system',
-      content: `You are a friendly, patient female repair trainer. You teach both adults and children how to fix anything step by step, with clear simple language, safety tips, and encouragement. Always ask age or skill level before giving instructions, tailor examples to their level, and keep explanations visual and interactive when possible.`
-    },
-    {
-      role: 'assistant',
-      content: "Hello! I'm Shaulat, your repair trainer. Are you an adult or a child? What would you like to learn to fix today?"
-    }
-  ];
-
-  const [messages, setMessages] = useState(initialMessages);
-  const [input, setInput] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef(null);
 
-  // Auto-rotate slides every 5s
+  const [current, setCurrent] = useState(0);
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState("");
+  const [email, setEmail] = useState("");
+  const [summary, setSummary] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [emailSubmitted, setEmailSubmitted] = useState(false);
+
+  const GROQ_API_KEY = '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';
+  const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
+  const BACKEND_URL = 'https://backend-gdg.vercel.app/api/chat'; // Change if deployed
+
+  // Auto-rotate slides
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrent((prev) => (prev + 1) % slides.length);
@@ -34,46 +31,75 @@ export default function ChatBotPage() {
     return () => clearInterval(interval);
   }, []);
 
-  // Scroll to bottom on new message
+  // Scroll to bottom
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const [current, setCurrent] = useState(0);
   const goPrev = () => setCurrent((prev) => (prev - 1 + slides.length) % slides.length);
   const goNext = () => setCurrent((prev) => (prev + 1) % slides.length);
 
-  // Groq API key and endpoint
-  const GROQ_API_KEY = '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';
-  const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
+  const handleEmailSubmit = (e) => {
+    e.preventDefault();
+    if (!email.trim()) return;
+    setEmailSubmitted(true);
+    setMessages([
+      {
+        role: "assistant",
+        content: "Hello! I'm Shaulat, your repair trainer. What would you like to learn to fix today?",
+      },
+    ]);
+  };
 
-  // Send message via Groq API
   const handleSend = async (e) => {
     e.preventDefault();
     if (!input.trim()) return;
+
     const userMessage = { role: 'user', content: input };
-    setMessages((prev) => [...prev, userMessage]);
+    const newMessages = [...messages, userMessage];
+    setMessages(newMessages);
     setInput("");
     setIsLoading(true);
 
     try {
-      const response = await fetch(GROQ_API_URL, {
+      // 1. Call backend to get updated summary
+      const res = await fetch(BACKEND_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, prompt: input })
+      });
+
+      const { summary: updatedSummary } = await res.json();
+      setSummary(updatedSummary);
+
+      // 2. Send updated messages to Groq with personalized summary
+      const fullPrompt = [
+        {
+          role: 'system',
+          content: `You are a friendly, patient female repair trainer named Shaulat. User summary: ${updatedSummary}. Provide visual, simple step-by-step repair guidance tailored to user needs. Always confirm skill level.`,
+        },
+        ...newMessages,
+      ];
+
+      const chatRes = await fetch(GROQ_API_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${GROQ_API_KEY}`,
+          Authorization: `Bearer ${GROQ_API_KEY}`,
         },
         body: JSON.stringify({
           model: 'llama-3.3-70b-versatile',
-          messages: [...messages, userMessage],
+          messages: fullPrompt,
         }),
       });
-      const data = await response.json();
-      const assistantMessage = data.choices?.[0]?.message || { role: 'assistant', content: 'Sorry, something went wrong.' };
-      setMessages((prev) => [...prev, assistantMessage]);
-    } catch (error) {
-      console.error(error);
-      setMessages((prev) => [...prev, { role: 'assistant', content: 'Error: Unable to get response from Groq.' }]);
+
+      const data = await chatRes.json();
+      const reply = data.choices?.[0]?.message || { role: 'assistant', content: "Sorry, I couldn't respond." };
+
+      setMessages((prev) => [...prev, reply]);
+    } catch (err) {
+      console.error(err);
+      setMessages((prev) => [...prev, { role: 'assistant', content: 'Error: Something went wrong.' }]);
     } finally {
       setIsLoading(false);
     }
@@ -103,29 +129,48 @@ export default function ChatBotPage() {
         </div>
       </div>
 
-      {/* RIGHT PANEL: Chat Interface */}
+      {/* RIGHT PANEL: Chat */}
       <div className="w-full md:w-1/2 flex flex-col justify-between p-6 md:p-12">
-        <div className="space-y-4 overflow-y-auto" style={{ flex: 1 }}>
-          {messages.map((m, i) => (
-            <div key={i} className={`flex ${m.role === 'assistant' || m.role === 'system' ? 'justify-start' : 'justify-end'}`}>
-              <div className={`px-4 py-2 rounded-lg max-w-xs whitespace-pre-wrap ${m.role === 'assistant' || m.role === 'system' ? 'bg-gray-800 text-gray-100' : 'bg-indigo-600 text-white'}`}>{m.content}</div>
+        {!emailSubmitted ? (
+          <form onSubmit={handleEmailSubmit} className="space-y-4">
+            <h2 className="text-2xl font-bold">Enter Your Email to Start</h2>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              className="w-full px-4 py-2 bg-gray-800 rounded-lg text-white focus:outline-none"
+              required
+            />
+            <button type="submit" className="bg-indigo-600 px-6 py-2 rounded-lg hover:bg-indigo-500 transition">Start Chat</button>
+          </form>
+        ) : (
+          <>
+            <div className="space-y-4 overflow-y-auto" style={{ flex: 1 }}>
+              {messages.map((m, i) => (
+                <div key={i} className={`flex ${m.role === 'assistant' ? 'justify-start' : 'justify-end'}`}>
+                  <div className={`px-4 py-2 rounded-lg max-w-xs whitespace-pre-wrap ${m.role === 'assistant' ? 'bg-gray-800 text-gray-100' : 'bg-indigo-600 text-white'}`}>
+                    {m.content}
+                  </div>
+                </div>
+              ))}
+              <div ref={scrollRef} />
             </div>
-          ))}
-          <div ref={scrollRef} />
-        </div>
 
-        {isLoading && <div className="py-2 text-center text-gray-400 animate-pulse">Typing...</div>}
+            {isLoading && <div className="py-2 text-center text-gray-400 animate-pulse">Shaulat is typing...</div>}
 
-        <form onSubmit={handleSend} className="mt-4 flex">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Type your message..."
-            className="flex-1 bg-gray-800 text-white px-4 py-2 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          />
-          <button type="submit" className="bg-indigo-600 px-6 py-2 rounded-r-lg hover:bg-indigo-500 transition">Send</button>
-        </form>
+            <form onSubmit={handleSend} className="mt-4 flex">
+              <input
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Type your question..."
+                className="flex-1 bg-gray-800 text-white px-4 py-2 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+              <button type="submit" className="bg-indigo-600 px-6 py-2 rounded-r-lg hover:bg-indigo-500 transition">Send</button>
+            </form>
+          </>
+        )}
       </div>
     </div>
   );
