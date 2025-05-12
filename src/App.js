@@ -24,6 +24,7 @@ import ChatBox from './Page/ChatBox.jsx';
 import AnalysisAdminDashboard from './Page/AnalysisAdminDashboard.jsx';
 import AdminDetails from './Components/AdminDetails.jsx';
 import RideTracker from './Page/RideTracker.jsx';
+import AdminCRUD from './Page/AdminCRUD.jsx';
 
 // Function to get current user from localStorage
 const getCurrentUser = () => {
@@ -73,7 +74,7 @@ function App() {
           {/* Admin Protected Routes */}
           <Route path="/AdminDashboard" element={<AdminRoute element={<AdminDashboard />} />} />
           <Route path="/AdminDashboard/analysis" element={<AdminRoute element={<AnalysisAdminDashboard />} />} />
-          <Route path="/AdminDashboard/details" element={<AdminRoute element={<AdminDetails />} />} />
+          <Route path="/AdminDashboard/details" element={<AdminRoute element={<AdminCRUD/>} />} />
 
           <Route path="/addblog" element={<AddBlog />} />
           <Route path="/blog" element={<BlogList />} />
