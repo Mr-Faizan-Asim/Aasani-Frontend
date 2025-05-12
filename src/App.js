@@ -1,6 +1,6 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import SignInPage from './Page/SignInPage.jsx'; // Adjust the path based on your folder structure
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import SignInPage from './Page/SignInPage.jsx';
 import SignUpPage from './Page/SignUpPage.jsx';
 import Home from './Page/Home.jsx';
 import ProviderRegisterPage from './Page/ProviderRegisterPage.jsx';
@@ -9,10 +9,10 @@ import AdminDashboard from './Page/AdminDashboard.jsx';
 import ChatbotPage from './Page/ChatbotPage.jsx';
 import Navbar from './Components/Navbar.jsx';
 import Footer from './Components/Footer.jsx';
-import UserProfile from './Page/UserProfile.jsx'; // Import the UserProfile component
+import UserProfile from './Page/UserProfile.jsx';
 import SingleUser from './Page/SingleUser.jsx';
 import Contact from './Page/Contact.jsx';
-import GuestRegisterPage from './Page/GuestRegisterPage.jsx'; // Import the GuestRegisterPage component
+import GuestRegisterPage from './Page/GuestRegisterPage.jsx';
 import UserDashboard from './Page/UserDashboard.jsx';
 import GuestsDashboard from './Page/GuestsDashboard.jsx';
 import FindService from './Page/FindService.jsx';
@@ -25,49 +25,65 @@ import AnalysisAdminDashboard from './Page/AnalysisAdminDashboard.jsx';
 import AdminDetails from './Components/AdminDetails.jsx';
 import RideTracker from './Page/RideTracker.jsx';
 
+// Function to get current user from localStorage
+const getCurrentUser = () => {
+  try {
+    const user = JSON.parse(localStorage.getItem("user"));
+    return user;
+  } catch {
+    return null;
+  }
+};
+
+// PrivateRoute wrapper for admin-only routes
+const AdminRoute = ({ element }) => {
+  const user = getCurrentUser();
+  if (!user || user.role !== "admin") {
+    return <Navigate to="/signin" replace />;
+  }
+  return element;
+};
 
 function App() {
   return (
     <BrowserRouter>
       <div className="font-GoogleSans">
-        <Navbar/>
+        <Navbar />
         <Routes>
-          {/* Set the sign in page as the default/homepage  */}
           <Route path="/signin" element={<SignInPage />} />
           <Route path="/signup" element={<SignUpPage />} />
           <Route path="/" element={<Home />} />
-          
+
           <Route path="/services" element={<FindService />} />
           <Route path="/provider-register" element={<ProviderRegisterPage />} />
           <Route path="/find-service" element={<FindServicePage />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/Shaulat" element={<ChatbotPage />} />
+          <Route path="/addguest" element={<GuestRegisterPage />} />
+          <Route path="/user/:userId" element={<SingleUser />} />
 
+          <Route path="/user-dashboard" element={<UserDashboard />} />
+          <Route path="/user-dashboard/userdetails" element={<UserProfile />} />
+          <Route path="/user-dashboard/become-service-provider" element={<ProviderRegisterPage />} />
+          <Route path="/user-dashboard/chats" element={<ChatPage />} />
 
-          
-         <Route path="/admin" element={<AdminDashboard/>} /> 
-         <Route path="/user-dashboard" element={<UserDashboard/>} /> {/* Add this line for the user profile page /user-dashboard/userdetails*/}
-         <Route path="/user-dashboard/userdetails" element={<UserProfile/>} /> {/* Add this line for the user profile page */}
-         <Route path="/user/:userId" element={<SingleUser/>} />
-         <Route path="/contact" element={<Contact/>} /> {/* Add this line for the contact page */}
-         <Route path="/Shaulat" element={<ChatbotPage />}/> {/* Add this line for the chat page */}
-         <Route path="/addguest" element={<GuestRegisterPage/>}/> {/* Add this line for the chat page */}
-         <Route path="/user-dashboard/become-service-provider" element={<ProviderRegisterPage/>}/>
-         <Route path="/GuardDashboard" element={<GuestsDashboard/>}/> {/* Add this line for the chat page */}
-         
-         <Route path="/SocietyOwnerDashboard" element={<SocietyOwnerDashboard/>}/> {/* Add this line for the chat page */}
-         <Route path="/AdminDashboard" element={<AdminDashboard/>}/> {/* Add this line for the chat pag /SocietyOwnerDashboard */}
-         <Route path="/AdminDashboard/analysis" element={<AnalysisAdminDashboard/>}/> {/* Add this line for the chat pag /SocietyOwnerDashboard */}
-         <Route path="/AdminDashboard/details" element={<AdminDetails/>}/> {/* Add this line for the chat pag /SocietyOwnerDashboard */}
-         <Route path='/addblog' element={<AddBlog/>}/> 
-         <Route path='/blog' element={<BlogList/>}/>
-         <Route path='/chatting' element={<ChatBox/>}/>
-         <Route path='/user-dashboard/chats' element={<ChatPage/>}/>
-         
-         <Route path='/tracker' element={<RideTracker />}/>
+          <Route path="/GuardDashboard" element={<GuestsDashboard />} />
+          <Route path="/SocietyOwnerDashboard" element={<SocietyOwnerDashboard />} />
+
+          {/* Admin Protected Routes */}
+          <Route path="/AdminDashboard" element={<AdminRoute element={<AdminDashboard />} />} />
+          <Route path="/AdminDashboard/analysis" element={<AdminRoute element={<AnalysisAdminDashboard />} />} />
+          <Route path="/AdminDashboard/details" element={<AdminRoute element={<AdminDetails />} />} />
+
+          <Route path="/addblog" element={<AddBlog />} />
+          <Route path="/blog" element={<BlogList />} />
+          <Route path="/chatting" element={<ChatBox />} />
+          <Route path="/tracker" element={<RideTracker />} />
         </Routes>
-        <Footer/>
+        <Footer />
       </div>
     </BrowserRouter>
   );
 }
-//Deploymeny Progress
+
 export default App;
