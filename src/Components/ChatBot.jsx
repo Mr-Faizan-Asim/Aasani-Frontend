@@ -21,7 +21,7 @@ export default function ChatBotPage() {
 
   const GROQ_API_KEY = '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';
   const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
-  const BACKEND_URL = 'https://backend-gdg.vercel.app/api/chat'; // Change if deployed
+  const BACKEND_URL = 'https://backend-gdg.vercel.app/api/chats'; // Change if deployed
 
   // Auto-rotate slides
   useEffect(() => {
