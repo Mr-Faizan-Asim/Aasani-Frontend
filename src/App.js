@@ -39,6 +39,7 @@ const getCurrentUser = () => {
 const AdminRoute = ({ element }) => {
   const user = getCurrentUser();
   if (!user || user.role !== "admin") {
+    console.log(user);
     return <Navigate to="/signin" replace />;
   }
   return element;
